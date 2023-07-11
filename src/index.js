@@ -54,9 +54,10 @@ import { usePollute } from "./hooks/user-pollute";
  * @property {string} borderColor
  * @property {number} fontSize
  * @property {string} fontFamily
- * @property {{id: string; name: string; emojis: {id: string; name: string; keywords: string[], skins: {src: string}[]}}[]=} customEmojis
+ * @property {import("emoji-mart").CustomEmoji[]=} customEmojis
  * @property {(text: string) => Promise<MetionUser[]>=} searchMention
  * @property {HTMLDivElement=} buttonElement
+ * @property {boolean} hasMention
  */
 
 /**
@@ -87,11 +88,12 @@ function InputEmoji(props, ref) {
     customEmojis,
     searchMention,
     buttonElement,
+    hasMention,
     // style
     borderRadius,
     borderColor,
     fontSize,
-    fontFamily
+    fontFamily,
   } = props;
 
   /** @type {React.MutableRefObject<import('./text-input').Ref | null>} */
@@ -99,7 +101,9 @@ function InputEmoji(props, ref) {
 
   const { addEventListener, listeners } = useEventListeners();
 
-  const { addSanitizeFn, sanitize, sanitizedTextRef } = useSanitize(props.shouldReturn);
+  const { addSanitizeFn, sanitize, sanitizedTextRef } = useSanitize(
+    props.shouldReturn
+  );
 
   const { addPolluteFn, pollute } = usePollute();
 
@@ -114,7 +118,7 @@ function InputEmoji(props, ref) {
   );
 
   const setValue = useCallback(
-    value => {
+    (value) => {
       updateHTML(value);
     },
     [updateHTML]
@@ -126,7 +130,7 @@ function InputEmoji(props, ref) {
     ref,
     setValue,
     textInputRef,
-    emitChange
+    emitChange,
   });
 
   useEffect(() => {
@@ -202,7 +206,7 @@ function InputEmoji(props, ref) {
     onKeyDown,
     sanitize,
     sanitizedTextRef,
-    updateHTML
+    updateHTML,
   ]);
 
   useEffect(() => {
@@ -291,11 +295,24 @@ function InputEmoji(props, ref) {
 
   return (
     <div className="react-emoji">
-      <MentionWrapper
-        searchMention={searchMention}
-        addEventListener={addEventListener}
-        appendContent={appendContent}
+      {hasMention && (
+        <MentionWrapper
+          searchMention={searchMention}
+          addEventListener={addEventListener}
+          appendContent={appendContent}
+          addSanitizeFn={addSanitizeFn}
+        />
+      )}
+
+      <EmojiPickerWrapper
+        theme={theme}
+        keepOpened={keepOpened}
+        disableRecent={disableRecent}
+        customEmojis={customEmojis}
         addSanitizeFn={addSanitizeFn}
+        addPolluteFn={addPolluteFn}
+        appendContent={appendContent}
+        buttonElement={buttonElement}
       />
       <TextInput
         ref={textInputRef}
@@ -314,21 +331,11 @@ function InputEmoji(props, ref) {
           borderRadius,
           borderColor,
           fontSize,
-          fontFamily
+          fontFamily,
         }}
         tabIndex={tabIndex}
         className={inputClass}
         onChange={handleTextInputChange}
-      />
-      <EmojiPickerWrapper
-        theme={theme}
-        keepOpened={keepOpened}
-        disableRecent={disableRecent}
-        customEmojis={customEmojis}
-        addSanitizeFn={addSanitizeFn}
-        addPolluteFn={addPolluteFn}
-        appendContent={appendContent}
-        buttonElement={buttonElement}
       />
     </div>
   );
@@ -346,7 +353,7 @@ InputEmojiWithRef.defaultProps = {
   fontFamily: "sans-serif",
   tabIndex: 0,
   shouldReturn: false,
-  customEmojis: []
+  customEmojis: [],
 };
 
 export default InputEmojiWithRef;

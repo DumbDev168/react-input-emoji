@@ -2,7 +2,10 @@
 /* eslint-disable react/prop-types */
 // vendors
 import React, { useImperativeHandle, forwardRef, useRef } from "react";
-import { handlePasteHtmlAtCaret, moveCaretToEnd } from "./utils/input-event-utils";
+import {
+  handlePasteHtmlAtCaret,
+  moveCaretToEnd,
+} from "./utils/input-event-utils";
 
 /**
  * @typedef {Object} Props
@@ -41,7 +44,7 @@ const TextInput = (
   ref
 ) => {
   useImperativeHandle(ref, () => ({
-    appendContent: html => {
+    appendContent: (html) => {
       if (textInputRef.current) {
         textInputRef.current.focus();
       }
@@ -52,13 +55,17 @@ const TextInput = (
         textInputRef.current.focus();
       }
 
-      if (textInputRef.current && placeholderRef.current && textInputRef.current.innerHTML.trim() === "") {
+      if (
+        textInputRef.current &&
+        placeholderRef.current &&
+        textInputRef.current.innerHTML.trim() === ""
+      ) {
         placeholderRef.current.style.visibility = "visible";
       } else if (placeholderRef.current) {
         placeholderRef.current.style.visibility = "hidden";
       }
 
-      if (textInputRef.current && typeof onChange === 'function') {
+      if (textInputRef.current && typeof onChange === "function") {
         onChange(textInputRef.current.innerHTML);
       }
     },
@@ -66,7 +73,7 @@ const TextInput = (
       if (textInputRef.current) {
         textInputRef.current.innerHTML = value;
       }
-      
+
       if (placeholderRef.current) {
         if (value.trim() === "") {
           placeholderRef.current.style.visibility = "visible";
@@ -75,17 +82,17 @@ const TextInput = (
         }
       }
 
-      if (typeof onChange === 'function' && textInputRef.current) {
+      if (typeof onChange === "function" && textInputRef.current) {
         onChange(textInputRef.current.innerHTML);
       }
     },
     get html() {
-      if (!textInputRef.current) return ''
+      if (!textInputRef.current) return "";
 
       return textInputRef.current.innerHTML;
     },
     get text() {
-      if (!textInputRef.current) return ''
+      if (!textInputRef.current) return "";
 
       return textInputRef.current.innerText;
     },
@@ -93,20 +100,20 @@ const TextInput = (
       if (!textInputRef.current) {
         return {
           width: 0,
-          height: 0
-        }
+          height: 0,
+        };
       }
 
       return {
         width: textInputRef.current.offsetWidth,
-        height: textInputRef.current.offsetHeight
+        height: textInputRef.current.offsetHeight,
       };
     },
     focus() {
-      if (!textInputRef.current) return
+      if (!textInputRef.current) return;
 
       textInputRef.current.focus();
-    }
+    },
   }));
 
   /** @type {React.MutableRefObject<HTMLDivElement | null>} */
@@ -119,14 +126,18 @@ const TextInput = (
    * @param {React.KeyboardEvent} event
    */
   function handleKeyDown(event) {
-    if (event.key === "Enter" && (event.shiftKey === true || event.ctrlKey === true) && props.shouldReturn) {
+    if (
+      event.key === "Enter" &&
+      (event.shiftKey === true || event.ctrlKey === true) &&
+      props.shouldReturn
+    ) {
       event.preventDefault();
-      if(textInputRef.current) {
-        textInputRef.current.innerHTML = `${textInputRef.current.innerHTML}</br></br>`
-        moveCaretToEnd(textInputRef)
+      if (textInputRef.current) {
+        textInputRef.current.innerHTML = `${textInputRef.current.innerHTML}</br></br>`;
+        moveCaretToEnd(textInputRef);
         return;
       }
-    } 
+    }
     if (event.key === "Enter") {
       props.onEnter(event);
     } else if (event.key === "ArrowUp") {
@@ -164,7 +175,7 @@ const TextInput = (
       }
     }
 
-    if (typeof onChange === 'function' && textInputRef.current) {
+    if (typeof onChange === "function" && textInputRef.current) {
       onChange(textInputRef.current.innerHTML);
     }
   }
@@ -181,8 +192,10 @@ const TextInput = (
           onKeyUp={handleKeyUp}
           tabIndex={tabIndex}
           contentEditable
-          className={`react-input-emoji--input${className ? ` ${className}` : ""
-            }`}
+          dir="auto"
+          className={`react-input-emoji--input${
+            className ? ` ${className}` : ""
+          }`}
           onBlur={props.onBlur}
           onCopy={props.onCopy}
           onPaste={props.onPaste}
